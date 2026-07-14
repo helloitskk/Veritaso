@@ -1,1 +1,11 @@
+# Log files
 *.log
+
+# Maven build output
+target/
+
+# IntelliJ IDEA
+.idea/
+
+# Java compiled files
+*.class
