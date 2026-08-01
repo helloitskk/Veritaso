@@ -1,7 +1,5 @@
 package com.kajal.veritaso.service;
-import com.kajal.veritaso.dto.GeneratedQuestion;
-import com.kajal.veritaso.dto.QuestionResponse;
-import com.kajal.veritaso.dto.TaskResponse;
+import com.kajal.veritaso.dto.*;
 import com.kajal.veritaso.entity.Question;
 import com.kajal.veritaso.entity.Quiz;
 import com.kajal.veritaso.entity.Task;
@@ -87,5 +85,51 @@ public class QuizService {
             responses.add(response);
         }
         return responses;
+    }
+
+    public QuizSubmissionResponse submitQuiz(Long quizId,
+                                             QuizSubmissionRequest request) {
+
+        List<AnswerRequest> answers = request.getAnswers();
+
+        int score = 0;
+
+        for (AnswerRequest answer : answers) {
+
+            Question question = questionRepository
+                    .findById(answer.getQuestionId())
+                    .orElse(null);
+
+            if (question == null) {
+                continue;
+            }
+
+            if (answer.getSelectedAnswer()
+                    .equals(question.getCorrectAnswer())) {
+
+                score++;
+            }
+        }
+
+        Quiz quiz = quizRepository
+                .findById(quizId)
+                .orElse(null);
+
+        QuizSubmissionResponse response = new QuizSubmissionResponse();
+
+        if (quiz == null) {
+            response.setMessage("Quiz not found");
+            response.setScore(null);
+            return response;
+        }
+
+        quiz.setScore(score);
+
+        quizRepository.save(quiz);
+
+        response.setScore(score);
+        response.setMessage("Quiz submitted successfully");
+
+        return response;
     }
 }
