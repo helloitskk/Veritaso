@@ -1,9 +1,6 @@
 package com.kajal.veritaso.controller;
 
-import com.kajal.veritaso.dto.QuestionResponse;
-import com.kajal.veritaso.dto.QuizSubmissionRequest;
-import com.kajal.veritaso.dto.QuizSubmissionResponse;
-import com.kajal.veritaso.dto.TaskResponse;
+import com.kajal.veritaso.dto.*;
 import com.kajal.veritaso.service.QuizService;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,4 +27,6 @@ public class QuizController {
     }
     @PostMapping("/{quizId}/submit")
     public QuizSubmissionResponse submitQuiz(@PathVariable Long quizId,@RequestBody QuizSubmissionRequest request){ return quizService.submitQuiz(quizId,request);}
+
+
 }

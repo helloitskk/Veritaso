@@ -7,7 +7,6 @@ import com.kajal.veritaso.repository.QuestionRepository;
 import org.springframework.stereotype.Service;
 import com.kajal.veritaso.repository.QuizRepository;
 import com.kajal.veritaso.repository.TaskRepository;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,13 +122,51 @@ public class QuizService {
             return response;
         }
 
+        Task task = quiz.getTask();
+
         quiz.setScore(score);
+        quiz.setStatus("SUBMITTED");
+
+        if (score >= 2) {
+            task.setStatus("COMPLETED");
+        } else {
+            task.setStatus("QUIZ_REQUIRED");
+        }
 
         quizRepository.save(quiz);
+        taskRepository.save(task);
 
         response.setScore(score);
         response.setMessage("Quiz submitted successfully");
 
         return response;
+    }
+
+    public List<QuizHistoryResponse> getQuizHistory(Long taskId) {
+
+        List<Quiz> quizzes = quizRepository.findByTask_Id(taskId);
+
+        List<QuizHistoryResponse> responses = new ArrayList<>();
+
+        for (Quiz quiz : quizzes) {
+
+            QuizHistoryResponse response = new QuizHistoryResponse();
+
+            response.setQuizId(quiz.getId());
+            response.setAttemptNumber(quiz.getAttemptNumber());
+            response.setScore(quiz.getScore());
+            response.setStatus(quiz.getStatus());
+            response.setCreatedAt(quiz.getCreatedAt());
+
+            if (quiz.getScore() == null) {
+                response.setPassed(false);
+            } else {
+                response.setPassed(quiz.getScore() >= 2);
+            }
+
+            responses.add(response);
+        }
+
+        return responses;
     }
 }
